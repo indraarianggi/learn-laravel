@@ -10,6 +10,8 @@
 
         <div class="container">
 
+            @include('partials/_message')
+
             @yield('content')
 
             @include('partials/_footer')
