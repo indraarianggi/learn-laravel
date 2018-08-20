@@ -15,7 +15,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        // create a variable store all the blog post from database
+        $posts = Post::all();
+
+        // return view and pass the variable above
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -25,7 +29,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts/create');
+        return view('posts.create');
     }
 
     /**
@@ -68,7 +72,7 @@ class PostController extends Controller
     {
         $post = Post::find($id);
 
-        return view('posts/show', compact('post'));
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -79,7 +83,11 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        // find post in database and store in a variable
+        $post = Post::find($id);
+
+        // return the view and pass in the variable
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -91,7 +99,26 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // validate the data
+        $this->validate($request, array(
+            // rules
+            'title' => 'required|max:190',
+            'body'  => 'required'
+        ));
+
+        // save the data to database
+        $post = Post::find($id);
+
+        $post->title    = $request->input('title');
+        $post->body     = $request->input('body');
+
+        $post->save();
+
+        // set flash success message
+        Session::flash('success', 'This post was successfully updated!');
+
+        // redirect with flash message to posts.show
+        return redirect()->route('posts.show', $post->id);
     }
 
     /**
@@ -102,6 +129,13 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // find data want to delete
+        $post = Post::find($id);
+
+        $post->delete();
+
+        Session::flash('success', 'The post was successfully deleted!');
+
+        return redirect()->route('posts.index');
     }
 }
